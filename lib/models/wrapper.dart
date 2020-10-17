@@ -17,7 +17,7 @@ class Wrapper extends StatelessWidget {
     } else {
       print("Going to Dashboard");
       print(user.uid);
-      return Dashboard("vaibhavgoley3@gmail.com");
+      return Dashboard();
     }
   }
 }

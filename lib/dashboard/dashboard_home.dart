@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,76 +7,15 @@ import 'package:pro1/models/user.dart';
 import 'package:provider/provider.dart';
 
 class Dashboard extends StatefulWidget {
-  String email;
-  Dashboard(String s) {
-    email = s;
-  }
-
   @override
   _DashboardState createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
-  User userDetails = new User();
   int _cuurentIndex = 0;
-
-  void getItemsFromDatabase(String id, BuildContext context) async {
-    final DatabaseReference itemImages =
-        FirebaseDatabase.instance.reference().child(id).child("user-info");
-
-    await itemImages.once().then((DataSnapshot snapshot) {
-      //List<Item> l = [];
-      if (snapshot.value != null) {
-        var keys = snapshot.value.keys;
-        var values = snapshot.value;
-
-        print(
-            "******************* From Getdata from firebase ********************");
-        print(keys);
-        print(values);
-        userDetails.name = values[keys[0]]["name"];
-        userDetails.email = values[keys[0]]["email"];
-        userDetails.bldGrp = values[keys[0]]["bld_grp"];
-        userDetails.location = values[keys[0]]["location"];
-
-        print(userDetails.name);
-
-/*        for (var key in keys) {
-          var theData;
-          try {
-            theData = values[key].values;
-          } catch (e) {
-            //Do nothing
-          }
-          if (theData != null)
-            for (var value in values[key].values) {
-              print("I am here");
-              Item item = new Item(
-                key: key,
-                name: value['name'],
-                description: value['description'],
-                price: double.parse(value['price'].toString()),
-                coverImageURL: value['_coverImageURL'],
-              );
-
-              //print("value $i");
-              //print(value['_coverImageURL']);
-              l.add(item);
-            }
-          // print(values[key].values['_coverImageURL']);
-        }
-
-        print("From line 55");
-        print(l);
-*/
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<MyUser>(context);
-    getItemsFromDatabase(user.uid, context);
     // print(widget.email);
     var _kDefaultTabBarInactiveColor = Colors.grey[700];
     return new MaterialApp(
@@ -113,13 +50,15 @@ class _DashboardState extends State<Dashboard> {
             builder: (BuildContext context) {
               switch (index) {
                 case 0:
-                  return new UserProfile(widget.email);
+                  return new UserProfile();
                 case 1:
                   return new request();
                 case 2:
                   return new blood_data();
                 case 3:
                   return new member();
+                default:
+                  return new Dashboard();
               }
             },
           );
@@ -130,10 +69,6 @@ class _DashboardState extends State<Dashboard> {
 }
 
 class UserProfile extends StatefulWidget {
-  String email;
-  UserProfile(String s) {
-    email = s;
-  }
   @override
   _UserProfileState createState() => _UserProfileState();
 }
@@ -146,7 +81,9 @@ class User {
 class _UserProfileState extends State<UserProfile> {
   final AuthService _auth = AuthService();
 
-  Future<dynamic> getdata() async {
+  User u1 = new User();
+
+  /*Future<dynamic> getdata() async {
     //print(widget.email);
     var url = 'http://192.168.43.75/dashboard/php_files/getdata.php';
     var res = await http.post(url, body: {
@@ -155,18 +92,34 @@ class _UserProfileState extends State<UserProfile> {
     var data1 = json.decode(res.body);
     print(data1);
     return data1;
+  }*/
+
+  void getData(String id, BuildContext context) async {
+    final DatabaseReference itemImages =
+        FirebaseDatabase.instance.reference().child(id).child("user-info");
+
+    await itemImages.once().then((DataSnapshot snapshot) {
+      if (snapshot.value != null) {
+        var keys = snapshot.value.keys;
+        var values = snapshot.value;
+
+        for (var key in keys) {
+          print(values[key]);
+          u1.name = values[key]["name"];
+          u1.email = values[key]["email"];
+          u1.bldGrp = values[key]["bld_grp"];
+          u1.location = values[key]["location"];
+        }
+        print(u1.name);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var data1 = getdata();
+    final user = Provider.of<MyUser>(context);
+    getData(user.uid, context);
 
-    User u1 = new User();
-    data1.then((s) {
-      u1.location = s['location'];
-      print(s['location']);
-    });
-    print(u1.location);
     return Scaffold(
         appBar: AppBar(
           title: Text("Profile", style: TextStyle(fontSize: 20)),
@@ -186,7 +139,8 @@ class _UserProfileState extends State<UserProfile> {
           Padding(padding: const EdgeInsets.only(bottom: 20)),
           ListTile(
               leading: Icon(Icons.person, size: 30),
-              title: Text("${u1.location}", style: TextStyle(fontSize: 30)),
+              title: Text(u1.name != null ? u1.name : "name",
+                  style: TextStyle(fontSize: 30)),
               trailing: Icon(FontAwesomeIcons.pencilAlt, size: 25)),
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           Divider(
@@ -196,7 +150,8 @@ class _UserProfileState extends State<UserProfile> {
           ListTile(
               leading: Icon(FontAwesomeIcons.solidHeart, size: 25),
               title: Text("Blood Group", style: TextStyle(fontSize: 25)),
-              subtitle: Text("Blood Group", style: TextStyle(fontSize: 15)),
+              subtitle: Text(u1.bldGrp != null ? u1.bldGrp : "blood group",
+                  style: TextStyle(fontSize: 15)),
               trailing: Icon(FontAwesomeIcons.pencilAlt, size: 25)),
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           Divider(
@@ -206,7 +161,8 @@ class _UserProfileState extends State<UserProfile> {
           ListTile(
               leading: Icon(Icons.location_on, size: 30),
               title: Text("Location", style: TextStyle(fontSize: 25)),
-              subtitle: Text("Location", style: TextStyle(fontSize: 15)),
+              subtitle: Text(u1.location != null ? u1.location : "location",
+                  style: TextStyle(fontSize: 15)),
               trailing: Icon(FontAwesomeIcons.pencilAlt, size: 25)),
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           Divider(
@@ -215,8 +171,9 @@ class _UserProfileState extends State<UserProfile> {
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           ListTile(
               leading: Icon(Icons.email, size: 30),
-              title: Text("${widget.email}", style: TextStyle(fontSize: 25)),
-              subtitle: Text("Email", style: TextStyle(fontSize: 15)),
+              title: Text("Email", style: TextStyle(fontSize: 25)),
+              subtitle: Text(u1.email != null ? u1.email : "email",
+                  style: TextStyle(fontSize: 15)),
               trailing: Icon(FontAwesomeIcons.pencilAlt, size: 25)),
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           Divider(
