@@ -56,7 +56,7 @@ class _DashboardState extends State<Dashboard> {
                 case 2:
                   return new blood_data();
                 case 3:
-                  return new member();
+                  return new Member();
                 default:
                   return new Dashboard();
               }
@@ -149,9 +149,9 @@ class _UserProfileState extends State<UserProfile> {
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           ListTile(
               leading: Icon(FontAwesomeIcons.solidHeart, size: 25),
-              title: Text("Blood Group", style: TextStyle(fontSize: 25)),
-              subtitle: Text(u1.bldGrp != null ? u1.bldGrp : "blood group",
-                  style: TextStyle(fontSize: 15)),
+              title: Text(u1.bldGrp != null ? u1.bldGrp : "blood group",
+                  style: TextStyle(fontSize: 25)),
+              subtitle: Text("Blood Group", style: TextStyle(fontSize: 15)),
               trailing: Icon(FontAwesomeIcons.pencilAlt, size: 25)),
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           Divider(
@@ -160,9 +160,9 @@ class _UserProfileState extends State<UserProfile> {
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           ListTile(
               leading: Icon(Icons.location_on, size: 30),
-              title: Text("Location", style: TextStyle(fontSize: 25)),
-              subtitle: Text(u1.location != null ? u1.location : "location",
-                  style: TextStyle(fontSize: 15)),
+              title: Text(u1.location != null ? u1.location : "location",
+                  style: TextStyle(fontSize: 25)),
+              subtitle: Text("Location", style: TextStyle(fontSize: 15)),
               trailing: Icon(FontAwesomeIcons.pencilAlt, size: 25)),
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           Divider(
@@ -171,9 +171,9 @@ class _UserProfileState extends State<UserProfile> {
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           ListTile(
               leading: Icon(Icons.email, size: 30),
-              title: Text("Email", style: TextStyle(fontSize: 25)),
-              subtitle: Text(u1.email != null ? u1.email : "email",
-                  style: TextStyle(fontSize: 15)),
+              title: Text(u1.email != null ? u1.email : "email",
+                  style: TextStyle(fontSize: 25)),
+              subtitle: Text("Email", style: TextStyle(fontSize: 15)),
               trailing: Icon(FontAwesomeIcons.pencilAlt, size: 25)),
           Padding(padding: const EdgeInsets.only(bottom: 7.5)),
           Divider(
@@ -198,12 +198,12 @@ class _UserProfileState extends State<UserProfile> {
   }
 }
 
-class member extends StatefulWidget {
+class Member extends StatefulWidget {
   @override
-  _memberState createState() => _memberState();
+  _MemberState createState() => _MemberState();
 }
 
-class _memberState extends State<member> {
+class _MemberState extends State<Member> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
